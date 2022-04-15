@@ -1,14 +1,15 @@
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
+import random
 
 if __name__=='__main__':
     markerSet=cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
-    img=cv2.imread('ar.png')
-    detecteds, ids, rejecteds=cv2.aruco.detectMarkers(img,markerSet)
-    cv2.aruco.drawDetectedMarkers(img,detecteds,ids)
-    plt.imshow(img)
-    plt.show()
+    brd=cv2.imread('./dict_1.png')
+    a,b,c=cv2.aruco.detectMarkers(brd,markerSet)
+    newCorners=np.zeros((len(a),4,3),dtype=np.float32)
+    for cns,corner in enumerate(a):
+        newCorners[cns,:,:-1]=corner
+    
+    bord=cv2.aruco.Board_create(newCorners,markerSet,b)
 
-    cm=np.array([[1,0,0],[0,1,0],[0,0,1]])
-    cv2.aruco.estimatePoseSingleMarkers(detecteds,0.05,cm,1)

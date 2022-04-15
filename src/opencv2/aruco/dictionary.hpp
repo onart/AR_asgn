@@ -39,7 +39,7 @@ the use of this software, even if advised of the possibility of such damage.
 #ifndef __OPENCV_DICTIONARY_HPP__
 #define __OPENCV_DICTIONARY_HPP__
 
-#include <opencv2/core.hpp>
+#include "opencv2/core.hpp"
 
 namespace cv {
 namespace aruco {

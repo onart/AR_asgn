@@ -90,7 +90,10 @@ void calibrate(cv::VideoCapture& stream, const cv::Ptr<cv::aruco::Dictionary>& d
 		default:
 			break;
 		}
-		if (key == 13 && cameraMatrixOutput.total()) break;
+		if (key == 13) {
+			if (cameraMatrixOutput.total())break;
+			else { printf("Calibration imcomplete. Try with at least 1 frame capture\n"); }
+		}
 		cv::aruco::drawDetectedMarkers(img, markerCorners, markerIds);
 		cv::imshow("calibrating..", img);
 	};

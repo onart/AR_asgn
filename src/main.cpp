@@ -1,29 +1,4 @@
-#ifndef _DEBUG
-	#pragma comment(lib,"opencv2/lib/opencv_imgcodecs455.lib")
-	#pragma comment(lib,"opencv2/lib/opencv_highgui455.lib")
-	#pragma comment(lib, "opencv2/lib/opencv_core455.lib")
-	#pragma comment(lib, "opencv2/lib/opencv_videoio455.lib")
-	#pragma comment(lib, "opencv2/lib/opencv_aruco455.lib")
-	#pragma comment(lib, "opencv2/lib/opencv_calib3d455.lib")
-#else
-	#pragma comment(lib,"opencv2/lib/opencv_imgcodecs455d.lib")
-	#pragma comment(lib,"opencv2/lib/opencv_highgui455d.lib")
-	#pragma comment(lib, "opencv2/lib/opencv_core455d.lib")
-	#pragma comment(lib, "opencv2/lib/opencv_videoio455d.lib")
-	#pragma comment(lib, "opencv2/lib/opencv_aruco455d.lib")
-	#pragma comment(lib, "opencv2/lib/opencv_calib3d455d.lib")
-#endif
-#include "opencv2/imgcodecs.hpp"
-#include "opencv2/highgui.hpp"
-#include "opencv2/aruco.hpp"
-#include "opencv2/aruco/charuco.hpp"
-#include "opencv2/videoio.hpp"
-#include "opencv2/calib3d.hpp"
-#include <cstdio>
-#include <chrono>
-#include <thread>
-#include <vector>
-#include <iostream>
+#include "module.h"
 
 /// <summary>
 /// ChArUco를 이용하여 카메라 캘리브레이션을 수행합니다.
@@ -49,7 +24,8 @@ namespace onart {
 	void cgLoop();
 }
 
-int main() {
+int main(int argc, char* argv[]) {
+	std::filesystem::current_path(std::filesystem::path(argv[0]).parent_path());
 	cv::VideoCapture webcamStream(0);
 
 	cv::Mat img;
@@ -59,9 +35,9 @@ int main() {
 
 	calibrate(webcamStream, dict, cameraMatrix, distCoeffs);
 	detectNShowArUco(webcamStream, dict, cameraMatrix, distCoeffs);
+	webcamStream.release();
 
 	// (추가목표) 그래픽스 카메라 구성, 프레임버퍼로 그림
 	// (추가목표) aruco 위치와 포즈 기준으로 모델행렬 구성, 모델 렌더링
 	onart::cgLoop();
-
 }

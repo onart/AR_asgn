@@ -584,3 +584,8 @@ FodyWeavers.xsd
 # Additional files built by Visual Studio
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudio,c++,opencv,python
+/src/opencv2/lib/OpenCVModules.cmake
+/src/opencv2/lib/OpenCVModules-release.cmake
+/src/opencv2/lib/OpenCVModules-debug.cmake
+/src/opencv2/lib/OpenCVConfig.cmake
+/src/opencv2/lib/OpenCVConfig-version.cmake

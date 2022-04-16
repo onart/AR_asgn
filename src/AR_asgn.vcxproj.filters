@@ -30,6 +30,12 @@
     <ClCompile Include="externals\gl\glad\glad.c">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="adhoc.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="oaglem.h">
@@ -41,12 +47,18 @@
     <ClInclude Include="oagle.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="module.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="bg.vert">
+    <None Include="..\bin\bg.frag">
       <Filter>셰이더</Filter>
     </None>
-    <None Include="bg.frag">
+    <None Include="..\bin\bg.vert">
       <Filter>셰이더</Filter>
     </None>
   </ItemGroup>

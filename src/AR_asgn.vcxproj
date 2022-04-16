@@ -156,12 +156,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ar_util.cpp" />
+    <ClCompile Include="cg_util.cpp" />
+    <ClCompile Include="externals\gl\glad\glad.c" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="oagle.h" />
     <ClInclude Include="oaglem.h" />
     <ClInclude Include="oagle_simd.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bg.frag" />
+    <None Include="bg.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

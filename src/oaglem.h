@@ -285,7 +285,7 @@ namespace onart {
 		float sinx = cross(a, b).length();
 		float theta = asinf(sinx);
 		if (theta <= FLT_EPSILON)return a;
-		return sinf(theta * (1 - t)) * a + sinf(theta * t) * b;
+		return a * sinf(theta * (1 - t)) + b * sinf(theta * t);
 	}
 
 	/// <summary>

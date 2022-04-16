@@ -13,12 +13,21 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="셰이더">
+      <UniqueIdentifier>{2f5cc60e-e99a-40af-aa80-9a9a6951d3df}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="ar_util.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="cg_util.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="externals\gl\glad\glad.c">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -32,5 +41,13 @@
     <ClInclude Include="oagle.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bg.vert">
+      <Filter>셰이더</Filter>
+    </None>
+    <None Include="bg.frag">
+      <Filter>셰이더</Filter>
+    </None>
   </ItemGroup>
 </Project>

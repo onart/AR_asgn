@@ -25,10 +25,6 @@
 #include <vector>
 #include <iostream>
 
-#include "oagle.h"
-
-GLFWwindow* window;
-
 /// <summary>
 /// ChArUco를 이용하여 카메라 캘리브레이션을 수행합니다.
 /// </summary>
@@ -46,6 +42,13 @@ void calibrate(cv::VideoCapture& stream, const cv::Ptr<cv::aruco::Dictionary>& d
 /// <param name="distCoeffs">구한 카메라 파라미터 2</param>
 void detectNShowArUco(cv::VideoCapture& stream, const cv::Ptr<cv::aruco::Dictionary>& dict, const cv::Mat& cameraMatrix, const cv::Mat& distCoeffs);
 
+namespace onart {
+	/// <summary>
+	/// OpenGL을 이용한 렌더링 과정입니다.
+	/// </summary>
+	void cgLoop();
+}
+
 int main() {
 	cv::VideoCapture webcamStream(0);
 
@@ -59,6 +62,6 @@ int main() {
 
 	// (추가목표) 그래픽스 카메라 구성, 프레임버퍼로 그림
 	// (추가목표) aruco 위치와 포즈 기준으로 모델행렬 구성, 모델 렌더링
-	window = onart::createWindow("CG", 1280, 720);
+	onart::cgLoop();
 
 }

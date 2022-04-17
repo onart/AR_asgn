@@ -5,6 +5,7 @@
 GLFWwindow* window;
 GLuint rect, bgTex, cubo;
 double tp = 0;
+double dt = 0;
 int frame;
 void(*rd)(void);
 
@@ -137,19 +138,23 @@ namespace onart {
 		glBindTexture(GL_TEXTURE_2D, 0);
 		return tx;
 	}
-
+	
+	void getesc(GLFWwindow* window, int key, int scanCode, int action, int mods) {
+		if (key == GLFW_KEY_ESCAPE) glfwDestroyWindow(window);
+	}
 	bool init() {
-		window = createWindow("CG", 1280, 960);
+		window = createWindow("CG", 640, 480);
 		if (!window || !onart::initExtensions(window)) {
 			return false;
 		}
+		glfwSetKeyCallback(window, getesc);
 		glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glDepthFunc(GL_LEQUAL);
-		glViewport(0, 0, 1280, 960);
+		glViewport(0, 0, 640, 480);
 		glActiveTexture(GL_TEXTURE0);	// adhoc에서는 텍스처를 1종류만 쓸 것
 		bgprog.initWithFile("bg.vert", "bg.frag");
 		worldprog.initWithFile("world.vert", "world.frag");
@@ -167,9 +172,11 @@ namespace onart {
 		for (frame = 1; !glfwWindowShouldClose(window); frame++) {
 			glfwPollEvents();
 			rd();
-			double t = glfwGetTime();
+			static double prev = 0;
+			tp = glfwGetTime();
 			//printf("frame time=1/%f\r", 1 / (t - tp));
-			tp = t;
+			dt = tp - prev;
+			prev = tp;
 		}
 		destroyWindow(window);
 	}

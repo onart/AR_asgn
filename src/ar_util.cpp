@@ -69,6 +69,7 @@ void calibrate(cv::VideoCapture& stream, const cv::Ptr<cv::aruco::Dictionary>& d
 				cv::Mat prevCamera;
 				cameraMatrixOutput.copyTo(prevCamera);
 				imgSize = img.size();
+				system("cls;clear");
 				printf("captured %lld markers\n", markerIds.size());
 #ifdef CALIBRATE_CH
 				if (markerIds.size() < 4) break;

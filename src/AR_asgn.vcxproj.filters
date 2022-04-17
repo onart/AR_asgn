@@ -61,5 +61,11 @@
     <None Include="..\bin\bg.vert">
       <Filter>셰이더</Filter>
     </None>
+    <None Include="..\bin\world.frag">
+      <Filter>셰이더</Filter>
+    </None>
+    <None Include="..\bin\world.vert">
+      <Filter>셰이더</Filter>
+    </None>
   </ItemGroup>
 </Project>

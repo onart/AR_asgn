@@ -26,6 +26,12 @@
 #include <vector>
 #include <iostream>
 
+const float MARKER1_SIDE = 0.124f;
+const float MARKERBOARD_SIDE = 0.021f;
+const float MARKERGRID_GAP = 0.007f;
+const float CHARUCOGRID_SIDE = 0.021f;
+const float CHARUCOMARKER_SIDE = 0.011f;
+
 void calibrate(cv::VideoCapture& stream, const cv::Ptr<cv::aruco::Dictionary>& dict, cv::Mat& cameraMatrixOutput, cv::Mat& distCoeffsOutput) {
 	//cv::aruco::DetectorParameters params;
 	printf("press c key to capture a frame containing ChArUco for calibration\nIf done enough, press enter to proceed\n");
@@ -35,12 +41,12 @@ void calibrate(cv::VideoCapture& stream, const cv::Ptr<cv::aruco::Dictionary>& d
 	cv::Size imgSize;
 #define CALIBRATE_CH
 #ifdef CALIBRATE_CH
-	cv::Ptr<cv::aruco::CharucoBoard> charucoboard = cv::aruco::CharucoBoard::create(5, 7, 21.0f, 11.0f, dict);
+	cv::Ptr<cv::aruco::CharucoBoard> charucoboard = cv::aruco::CharucoBoard::create(5, 7, CHARUCOGRID_SIDE, CHARUCOMARKER_SIDE, dict);
 	cv::Ptr<cv::aruco::Board> board = charucoboard.staticCast<cv::aruco::Board>();
 	std::vector< cv::Mat > allCharucoCorners;
 	std::vector< cv::Mat > allCharucoIds;
 #else	// 보정이 잘 되지 않아 폐기
-	cv::Ptr<cv::aruco::GridBoard> gridboard = cv::aruco::GridBoard::create(7, 5, 0.021f, 0.007f, dict, 0);
+	cv::Ptr<cv::aruco::GridBoard> gridboard = cv::aruco::GridBoard::create(7, 5, MARKERBOARD_SIDE, MARKERGRID_GAP, dict, 0);
 	cv::Ptr<cv::aruco::Board> board = gridboard.staticCast<cv::aruco::Board>();
 	std::vector< std::vector< cv::Point2f > > allCorners;
 	std::vector< int > allIds;
@@ -68,6 +74,10 @@ void calibrate(cv::VideoCapture& stream, const cv::Ptr<cv::aruco::Dictionary>& d
 				if (markerIds.size() < 4) break;
 				cv::Mat currentCharucoCorners, currentCharucoIds;
 				cv::aruco::interpolateCornersCharuco(markerCorners, markerIds, img, charucoboard, currentCharucoCorners, currentCharucoIds);
+				if (currentCharucoCorners.total() <= 4) {
+					printf("Charuco Board not detected.\n");
+					continue;
+				}
 				allCharucoCorners.push_back(currentCharucoCorners);
 				allCharucoIds.push_back(currentCharucoIds);
 				double err = cv::aruco::calibrateCameraCharuco(allCharucoCorners, allCharucoIds, charucoboard, imgSize, cameraMatrixOutput, distCoeffsOutput);
@@ -116,9 +126,10 @@ void detectNShowArUco(cv::VideoCapture& stream, const cv::Ptr<cv::aruco::Diction
 		cv::aruco::detectMarkers(img, dict, markerCorners, markerIds);
 		cv::aruco::drawDetectedMarkers(img, markerCorners, markerIds);
 		std::vector<cv::Vec3d> rvs, tvs;
-		cv::aruco::estimatePoseSingleMarkers(markerCorners, 0.021f, cameraMatrix, distCoeffs, rvs, tvs);
+		cv::aruco::estimatePoseSingleMarkers(markerCorners, CHARUCOGRID_SIDE, cameraMatrix, distCoeffs, rvs, tvs);
+		
 		for (size_t i = 0; i < rvs.size(); i++) {
-			cv::drawFrameAxes(img, cameraMatrix, distCoeffs, rvs[i], tvs[i], 0.05f, 1);
+			cv::drawFrameAxes(img, cameraMatrix, distCoeffs, rvs[i], tvs[i], CHARUCOGRID_SIDE, 2);
 		}
 
 		cv::imshow("ArUco Pose", img);
@@ -126,4 +137,12 @@ void detectNShowArUco(cv::VideoCapture& stream, const cv::Ptr<cv::aruco::Diction
 		if (key == 13) break;
 	}
 	cv::destroyWindow("ArUco Pose");
+}
+
+void detectNDrawArUco(cv::Mat& img, const cv::Ptr<cv::aruco::Dictionary>& dict, const cv::Mat& cameraMatrix, const cv::Mat& distCoeffs) {
+	std::vector<int> markerIds;
+	std::vector<std::vector<cv::Point2f>> markerCorners;
+	cv::aruco::detectMarkers(img, dict, markerCorners, markerIds);
+	cv::aruco::drawDetectedMarkers(img, markerCorners, markerIds);
+	//cv::aruco::estimatePoseSingleMarkers(markerCorners,21.0f,cameraMatrix,distCoeffs,)
 }

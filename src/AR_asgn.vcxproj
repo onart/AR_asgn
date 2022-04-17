@@ -172,6 +172,8 @@
   <ItemGroup>
     <None Include="..\bin\bg.frag" />
     <None Include="..\bin\bg.vert" />
+    <None Include="..\bin\world.frag" />
+    <None Include="..\bin\world.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

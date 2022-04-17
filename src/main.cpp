@@ -24,18 +24,20 @@ namespace onart {
 	void cgLoop();
 }
 
+cv::VideoCapture webcamStream;
+cv::Mat cameraMatrix, distCoeffs;
+cv::Ptr<cv::aruco::Dictionary> dict;
+
 int main(int argc, char* argv[]) {
 	std::filesystem::current_path(std::filesystem::path(argv[0]).parent_path());
-	cv::VideoCapture webcamStream(0);
+	webcamStream.open(0);
 
 	cv::Mat img;
-	cv::Mat cameraMatrix, distCoeffs;
 
-	cv::Ptr<cv::aruco::Dictionary> dict = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
+	dict = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
 
 	calibrate(webcamStream, dict, cameraMatrix, distCoeffs);
 	detectNShowArUco(webcamStream, dict, cameraMatrix, distCoeffs);
-	webcamStream.release();
 
 	// (추가목표) 그래픽스 카메라 구성, 프레임버퍼로 그림
 	// (추가목표) aruco 위치와 포즈 기준으로 모델행렬 구성, 모델 렌더링

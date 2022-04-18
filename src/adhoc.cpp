@@ -97,8 +97,10 @@ namespace onart {
 
 	void init1() {
 		bgprog["mode"] = 1;
-		system("cls"); printf("move marker 1 to move this cube\n");
 		bgprog["homography"] = mat4();
+		worldprog["view"] = mat4();
+		system("cls"); printf("move marker 1 to move this cube\n");
+		
 		static bool nonce = false;
 		if (nonce) return;
 		nonce = true;
@@ -132,13 +134,16 @@ namespace onart {
 		worldprog.use();
 		glBindVertexArray(cubo);
 		glBindTexture(GL_TEXTURE_2D,cuboTex);
-		currentPosition = lerp(currentPosition, -desiredPos, dt * delay);
-		//print(desiredPos, "pos", ' '); print(desiredRot, "rot", '\r');
-		currentRotation = lerp(currentRotation, desiredRot, dt * delay);
 		if (d1) {
 			// 방법 1: 카메라 보정값을 믿고 회전과 위치를 적용. intrinsic 행렬만 사용하므로 카메라 중심이 (0,0,0), 카메라가 바라보는 방향이 +z방향. 렌더링과 방향을 맞춤(-desiredPos)
-			// rotation(vec3(1, 1, 0), PI): 기본 방향 보정(bottom면이 마커와 마주봄), translate(-1): 기본 위치 보정(중심을 빨간 원 부분에서 마커 중심으로, 그리고 밑면과 마커를 이론상 맞닿게. 프로그램에서 정의한 단위정육면체는 모서리 길이가 2임)
-			worldprog["model"] = mat4::TRS(currentPosition, currentRotation, 1) * mat4::TRS(-AUGMENT_UNIT * 0.5f, Quaternion::rotation(vec3(0, 1, 0), PI), AUGMENT_UNIT * 0.5f);
+			//currentPosition = lerp(currentPosition, -desiredPos, dt * delay);
+			desiredPos += desiredRot.toMat3() * vec3(1, 1, 0) * AUGMENT_UNIT * 0.5f;	// -> 좌표를 마커 중심의 것으로
+			currentPosition = -desiredPos;
+			print(currentPosition);
+			//print(desiredPos, "pos", ' '); print(desiredRot, "rot", '\r');	// 정확히 카메라를 보고 있을 때 면 법선은 (0,0,1), x축은 카메라 입장에서 오른쪽 방향, y축은 카메라 입장에서 아래 방향
+			currentRotation = lerp(currentRotation, desiredRot, dt * delay);
+			// rotation(vec3(1, 1, 0), PI): 기본 방향 보정(bottom면이 마커와 마주봄), scale: 마커와 크기를 최대한 비슷하게
+			worldprog["model"] = mat4::TRS(currentPosition, currentRotation * Quaternion::rotation(vec3(1, 1, 0), PI), AUGMENT_UNIT * 0.5f);
 			
 		}
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
@@ -159,7 +164,7 @@ namespace onart {
 	void render2() {
 		std::vector<cv::Point2f> corners;
 		std::vector<cv::Point2f> base{
-			cv::Point2f(-1,1), cv::Point2f(-1,-1), cv::Point2f(1,-1), cv::Point2f(1,1)
+			cv::Point2f(-1,1), cv::Point2f(-1,-1), cv::Point2f(1,-1), cv::Point2f(1,1)	// (반시계 방향 맞음)
 		};
 		webcamStream.read(camImage);
 		bool d1 = detect2(camImage, corners);
@@ -176,6 +181,40 @@ namespace onart {
 			bgprog["homography"] = to_oam(hom);
 			glBindTexture(GL_TEXTURE_2D, cuboTex);
 			glDrawArrays(GL_TRIANGLES, 0, 6);
+		}
+		glfwSwapBuffers(window);
+	}
+
+	void init3() {
+		system("cls"); printf("Marker 1 is now at (0,0,0), and the world coordinate unit will be meters\n");
+		bgprog["mode"] = 1;
+		bgprog["homography"] = mat4();
+	}
+
+	void render3() {
+		webcamStream.read(camImage);
+		dat2planar(camImage);
+		static Quaternion desiredRot, currentRotation;
+		static vec3 desiredPos;
+		static int count = 0;
+		
+		bool d1 = detect1(camImage, desiredRot, desiredPos);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		bgprog.use();
+		glBindVertexArray(rect);
+		glBindTexture(GL_TEXTURE_2D, bgTex);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		if (d1) {
+			constexpr float ln100 = 4.605170185988f;	// 실제 ln100보다 약 6.40e-8만큼 큼
+			constexpr float delay = ln100 / 0.5f;		// 분모=마커 위치에 99%만큼 다가갈 때까지 걸리는 시간(초), 필수 조건: 프레임 타임보다 길 것
+			worldprog.use();
+			worldprog["model"] = mat4::scale(AUGMENT_UNIT * 0.2f);
+			currentRotation = lerp(currentRotation, desiredRot, dt * delay);
+			vec3 dir = currentRotation.conjugate().toMat3() * vec3(0, 0, -1);
+			worldprog["view"] = mat4::lookAt(desiredPos, desiredPos + dir, vec3(0, 1, 0));
+			glBindVertexArray(cubo);
+			glBindTexture(GL_TEXTURE_2D, cuboTex);
+			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
 		}
 		glfwSwapBuffers(window);
 	}

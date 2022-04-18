@@ -168,6 +168,8 @@ namespace onart {
 				break;
 			case GLFW_KEY_3:
 			case GLFW_KEY_KP_3:
+				rd = render3;
+				init3();
 				break;
 			default:
 				break;

@@ -8,10 +8,11 @@ out vec3 normal;
 out vec2 tc;
 
 uniform mat4 model;
+uniform mat4 view;
 uniform mat4 proj;
 
 void main() {
 	tc=texcoord;
 	normal=norm;
-	gl_Position=proj*model*vec4(position,1);
+	gl_Position=proj*view*model*vec4(position,1);
 }

@@ -20,10 +20,20 @@ namespace onart {
 	};
 
 	/// <summary>
-	/// id=1 마커 위에 정육면체를 렌더링
+	/// id=1 마커 위에 정육면체를 렌더링. 카메라 고정
 	/// </summary>
 	void render1();
 	void init1();
+	/// <summary>
+	/// id=1 마커와 일치하도록 직사각형을 렌더링. 카메라 고정
+	/// </summary>
+	void render2();
+	void init2();
+	/// <summary>
+	/// 월드 좌표를 고정, 카메라를 움직임
+	/// </summary>
+	void render3();
+	void init3();
 
 	void render() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -140,7 +150,30 @@ namespace onart {
 	}
 	
 	void getesc(GLFWwindow* window, int key, int scanCode, int action, int mods) {
-		if (key == GLFW_KEY_ESCAPE) glfwDestroyWindow(window);
+		if (action == GLFW_PRESS) {
+			switch (key)
+			{
+			case GLFW_KEY_ESCAPE:
+				glfwSetWindowShouldClose(window, GLFW_TRUE);
+				break;
+			case GLFW_KEY_1:
+			case GLFW_KEY_KP_1:	// 마커 위에 렌더링
+				rd = render1;
+				init1();
+				break;
+			case GLFW_KEY_2:
+			case GLFW_KEY_KP_2:
+				rd = render2;
+				init2();
+				break;
+			case GLFW_KEY_3:
+			case GLFW_KEY_KP_3:
+				break;
+			default:
+				break;
+			}
+			if (key == GLFW_KEY_ESCAPE) glfwDestroyWindow(window);
+		}
 	}
 	bool init() {
 		window = createWindow("CG", 640, 480);
@@ -167,6 +200,8 @@ namespace onart {
 		return true;
 	}
 
+	void adhocFinalize();
+
 	void cgLoop() {
 		if (!init()) return;
 		for (frame = 1; !glfwWindowShouldClose(window); frame++) {
@@ -179,5 +214,6 @@ namespace onart {
 			prev = tp;
 		}
 		destroyWindow(window);
+		adhocFinalize();
 	}
 }

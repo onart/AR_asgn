@@ -39,7 +39,5 @@ int main(int argc, char* argv[]) {
 	calibrate(webcamStream, dict, cameraMatrix, distCoeffs);
 	detectNShowArUco(webcamStream, dict, cameraMatrix, distCoeffs);
 
-	// (추가목표) 그래픽스 카메라 구성, 프레임버퍼로 그림
-	// (추가목표) aruco 위치와 포즈 기준으로 모델행렬 구성, 모델 렌더링
 	onart::cgLoop();
 }

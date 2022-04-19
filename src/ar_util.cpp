@@ -1,30 +1,5 @@
-#ifndef _DEBUG
-#pragma comment(lib,"opencv2/lib/opencv_imgcodecs455.lib")
-#pragma comment(lib,"opencv2/lib/opencv_highgui455.lib")
-#pragma comment(lib, "opencv2/lib/opencv_core455.lib")
-#pragma comment(lib, "opencv2/lib/opencv_videoio455.lib")
-#pragma comment(lib, "opencv2/lib/opencv_aruco455.lib")
-#pragma comment(lib, "opencv2/lib/opencv_calib3d455.lib")
-#else
-#pragma comment(lib,"opencv2/lib/opencv_imgcodecs455d.lib")
-#pragma comment(lib,"opencv2/lib/opencv_highgui455d.lib")
-#pragma comment(lib, "opencv2/lib/opencv_core455d.lib")
-#pragma comment(lib, "opencv2/lib/opencv_videoio455d.lib")
-#pragma comment(lib, "opencv2/lib/opencv_aruco455d.lib")
-#pragma comment(lib, "opencv2/lib/opencv_calib3d455d.lib")
-#endif
-#include "opencv2/imgcodecs.hpp"
-#include "opencv2/highgui.hpp"
-#include "opencv2/aruco.hpp"
-#include "opencv2/aruco/charuco.hpp"
-#include "opencv2/videoio.hpp"
-#include "opencv2/calib3d.hpp"
-#include <cstdio>
-#include <cstdlib>
-#include <chrono>
-#include <thread>
-#include <vector>
-#include <iostream>
+#include "module.h"
+#include "oaglem.h"
 
 const float MARKER1_SIDE = 0.124f;
 const float MARKERBOARD_SIDE = 0.021f;
@@ -109,8 +84,7 @@ void calibrate(cv::VideoCapture& stream, const cv::Ptr<cv::aruco::Dictionary>& d
 		cv::imshow("calibrating..", img);
 	};
 	cv::destroyWindow("calibrating..");
-	system("cls");
-	system("clear");
+	system("cls;clear");
 }
 
 void detectNShowArUco(cv::VideoCapture& stream, const cv::Ptr<cv::aruco::Dictionary>& dict, const cv::Mat& cameraMatrix, const cv::Mat& distCoeffs) {
@@ -131,6 +105,11 @@ void detectNShowArUco(cv::VideoCapture& stream, const cv::Ptr<cv::aruco::Diction
 		
 		for (size_t i = 0; i < rvs.size(); i++) {
 			cv::drawFrameAxes(img, cameraMatrix, distCoeffs, rvs[i], tvs[i], CHARUCOGRID_SIDE, 2);
+			/*if (markerIds[i] == 0) {
+				cv::Mat r0;
+				cv::Rodrigues(rvs[i], r0);
+				std::cout << r0 << "\n\n";
+			}*/
 		}
 
 		cv::imshow("ArUco Pose", img);

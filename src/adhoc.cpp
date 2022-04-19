@@ -46,6 +46,9 @@ namespace onart {
 		return Quaternion::rotation(to_oav(rotation), cv::norm(rotation));
 	}
 
+	/// <summary>
+	/// 1번 마커를 찾으면 위치를 그리고 카메라 행렬에 따라 보정한 포즈를 리턴
+	/// </summary>
 	bool detect1(cv::Mat& img, Quaternion& rotation, vec3& position) {
 		std::vector<int> markerIds;
 		std::vector<std::vector<cv::Point2f>> markerCorners;
@@ -65,6 +68,9 @@ namespace onart {
 		return false;
 	}
 
+	/// <summary>
+	/// 1번 마커를 찾아 화면상 모퉁이 좌표를 리턴
+	/// </summary>
 	bool detect2(cv::Mat& img, std::vector<cv::Point2f>& corners) {
 		std::vector<int> markerIds;
 		std::vector<std::vector<cv::Point2f>> markerCorners;
@@ -89,6 +95,9 @@ namespace onart {
 		return false;
 	}
 
+	/// <summary>
+	/// bgTex의 데이터에 해당 이미지를 대입
+	/// </summary>
 	void dat2planar(const cv::Mat& img) {
 		glBindTexture(GL_TEXTURE_2D, bgTex);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img.cols, img.rows, 0, GL_BGR, GL_UNSIGNED_BYTE, img.data);
@@ -144,7 +153,6 @@ namespace onart {
 			currentRotation = lerp(currentRotation, desiredRot, dt * delay);
 			// rotation(vec3(1, 1, 0), PI): 기본 방향 보정(bottom면이 마커와 마주봄), scale: 마커와 크기를 최대한 비슷하게
 			worldprog["model"] = mat4::TRS(currentPosition, currentRotation * Quaternion::rotation(vec3(1, 1, 0), PI), AUGMENT_UNIT * 0.5f);
-			
 		}
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
 		glfwSwapBuffers(window);
@@ -206,16 +214,29 @@ namespace onart {
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		if (d1) {
 			constexpr float ln100 = 4.605170185988f;	// 실제 ln100보다 약 6.40e-8만큼 큼
-			constexpr float delay = ln100 / 0.5f;		// 분모=마커 위치에 99%만큼 다가갈 때까지 걸리는 시간(초), 필수 조건: 프레임 타임보다 길 것
+			constexpr float delay = ln100 / 2.0f;		// 분모=마커 위치에 99%만큼 다가갈 때까지 걸리는 시간(초), 필수 조건: 프레임 타임보다 길 것
 			worldprog.use();
-			worldprog["model"] = mat4::scale(AUGMENT_UNIT * 0.2f);
 			currentRotation = lerp(currentRotation, desiredRot, dt * delay);
-			vec3 dir = currentRotation.conjugate().toMat3() * vec3(0, 0, -1);
+			vec3 dir = -currentRotation.toMat3().row(3);	// 원래 방향: (0,0,-1). 마커 직교 기저를 역으로 적용하여 이것을 표현: currentRotation.conjugate().toMat3()*vec3(0,0,-1)과 동일함
 			worldprog["view"] = mat4::lookAt(desiredPos, desiredPos + dir, vec3(0, 1, 0));
+			worldprog["model"] = mat4::scale(AUGMENT_UNIT * 0.2f);
 			glBindVertexArray(cubo);
 			glBindTexture(GL_TEXTURE_2D, cuboTex);
+			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
+			worldprog["model"] = mat4::TRS(vec3(0, 0.5f, 0), Quaternion(), AUGMENT_UNIT * 0.2f);
+			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
+			worldprog["model"] = mat4::TRS(vec3(0, -0.5f, 0), Quaternion(), AUGMENT_UNIT * 0.2f);
+			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
+			worldprog["model"] = mat4::TRS(vec3(0.5f, 0, 0), Quaternion(), AUGMENT_UNIT * 0.2f);
+			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
+			worldprog["model"] = mat4::TRS(vec3(-0.5f, 0, 0), Quaternion(), AUGMENT_UNIT * 0.2f);
+			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
+			worldprog["model"] = mat4::TRS(vec3(0, 0, 0.5f), Quaternion(), AUGMENT_UNIT * 0.2f);
+			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
+			worldprog["model"] = mat4::TRS(vec3(0, 0, -0.5f), Quaternion(), AUGMENT_UNIT * 0.2f);
 			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
 		}
 		glfwSwapBuffers(window);
 	}
+
 }
